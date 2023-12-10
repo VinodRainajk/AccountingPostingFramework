@@ -27,7 +27,7 @@ public class CurrencyExchangeRate {
     @Column
     String currency2;
     @Column
-    double exchnageRate;
+    double exchangeRate;
 
 
 }

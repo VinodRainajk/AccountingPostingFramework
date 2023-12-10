@@ -16,9 +16,10 @@ public class AccountingPostingController {
         this.accountingPostingService = accountingPostingService;
     }
 
-    @GetMapping("/getTxnDetails{txnRefno}")
+    @GetMapping("/getTxnDetails/{txnRefno}")
     public List<AccountingModel> getTxnByRefNo(@PathVariable("txnRefno") String txnRefno)
     {
+        System.out.println("Inside the getTxnByRefNo");
         return accountingPostingService.getTransactions(txnRefno);
     }
 

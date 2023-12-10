@@ -1,4 +1,4 @@
-package com.exchangeRate.exchangeRate.model;
+package com.accountingProcessor.accountingProcessor.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,10 +9,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CurrencyExchangeRateModel {
+public class CurrencyExchangeRate {
 
+
+    Integer id;
     String currency1;
     String currency2;
     double exchangeRate;
-
 }

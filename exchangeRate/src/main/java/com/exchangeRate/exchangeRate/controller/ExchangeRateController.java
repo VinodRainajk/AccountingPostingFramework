@@ -18,6 +18,8 @@ public class ExchangeRateController {
 
     @GetMapping({"/getRate"})
     public CurrencyExchangeRateModel getExchnageRatePair(@RequestParam String currency1, @RequestParam String currency2) {
+         System.out.println("Currency1 "+currency1);
+        System.out.println("currency2 "+currency2);
         return exchangeRateService.getExchnageRate(currency1,currency2);
     }
 }
