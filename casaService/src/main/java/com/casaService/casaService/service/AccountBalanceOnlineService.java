@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AccountBalanceService {
+public class AccountBalanceOnlineService {
 
 
     BalanceRepository balanceRepository;
     @Autowired
-    public AccountBalanceService(BalanceRepository balanceRepository) {
+    public AccountBalanceOnlineService(BalanceRepository balanceRepository) {
       //  this.customerBalanceRepository = customerBalanceRepository;
         this.balanceRepository = balanceRepository;
     }

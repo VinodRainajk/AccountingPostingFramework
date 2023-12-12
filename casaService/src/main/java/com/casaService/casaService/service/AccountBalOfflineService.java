@@ -5,17 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomerAccountOfflineService {
+public class AccountBalOfflineService {
 
     CustBalOfflineRepo custBalOfflineRepo;
 
     @Autowired
-    public CustomerAccountOfflineService(CustBalOfflineRepo custBalOfflineRepo)
+    public AccountBalOfflineService(CustBalOfflineRepo custBalOfflineRepo)
     {
         this.custBalOfflineRepo = custBalOfflineRepo;
     }
-
-    public saveOffLineBalance()
 
 
 

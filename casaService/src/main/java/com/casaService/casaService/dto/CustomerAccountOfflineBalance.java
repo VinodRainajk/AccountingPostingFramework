@@ -1,8 +1,7 @@
 package com.casaService.casaService.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.casaService.casaService.model.DebitCreditEnum;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +22,8 @@ public class CustomerAccountOfflineBalance {
     Double amount;
 
     @Column
-    String drCr;
+    @Enumerated(EnumType.STRING)
+    DebitCreditEnum drCr;
 
     @Column
     String status;
