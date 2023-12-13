@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/AccountingPostingFramework.iml" filepath="$PROJECT_DIR$/.idea/AccountingPostingFramework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ExchnageRateService/ExchangeRateService.iml" filepath="$PROJECT_DIR$/ExchnageRateService/ExchangeRateService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/accountingProcessor/accountingProcessor.iml" filepath="$PROJECT_DIR$/accountingProcessor/accountingProcessor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/casaService/casaService.iml" filepath="$PROJECT_DIR$/casaService/casaService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/discoveryServer/discoveryServer.iml" filepath="$PROJECT_DIR$/discoveryServer/discoveryServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/exchangeRate/exchangeRate.iml" filepath="$PROJECT_DIR$/exchangeRate/exchangeRate.iml" />
+    </modules>
+  </component>
+</project>

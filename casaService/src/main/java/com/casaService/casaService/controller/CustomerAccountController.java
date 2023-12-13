@@ -3,7 +3,7 @@ package com.casaService.casaService.controller;
 import com.casaService.casaService.model.BalanceResponse;
 import com.casaService.casaService.model.BalanceUpdateRequest;
 import com.casaService.casaService.model.CustomerAccountModel;
-import com.casaService.casaService.service.AccountBalanceOnlineService;
+import com.casaService.casaService.service.AccountBalanceService;
 import com.casaService.casaService.service.CustomerWrapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,19 +11,20 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class CustomerAccountController {
 
-    AccountBalanceOnlineService accountBalanceOnlineService;
+    AccountBalanceService accountBalanceService;
     CustomerWrapperService customerWrapperService;
 
     @Autowired
-    public CustomerAccountController(AccountBalanceOnlineService accountBalanceOnlineService,CustomerWrapperService customerWrapperService) {
-        this.accountBalanceOnlineService = accountBalanceOnlineService;
+    public CustomerAccountController(AccountBalanceService accountBalanceService, CustomerWrapperService customerWrapperService) {
+        this.accountBalanceService = accountBalanceService;
         this.customerWrapperService = customerWrapperService;
     }
 
-    @PostMapping
-    public void getLock()
+    @PostMapping("/balanceUpdate")
+    public BalanceUpdateRequest updateCustomerBalance(@RequestBody BalanceUpdateRequest balanceUpdateRequest)
     {
-        accountBalanceOnlineService.getLockonAccount(123);
+       return customerWrapperService.updateCustomerBalance(balanceUpdateRequest);
+       // accountBalanceOnlineService.getLockonAccount(123);
     }
 
     @PostMapping("/newAccount")

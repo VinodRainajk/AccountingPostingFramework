@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static jakarta.persistence.GenerationType.SEQUENCE;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,6 +17,10 @@ import lombok.Setter;
 public class CustomerAccountOfflineBalance {
 
     @Id
+    @Column
+    @GeneratedValue(strategy = SEQUENCE)
+    Integer id;
+
     @Column
     Integer customerAccNo;
 

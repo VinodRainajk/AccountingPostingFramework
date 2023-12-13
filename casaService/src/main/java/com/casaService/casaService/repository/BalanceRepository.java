@@ -2,6 +2,7 @@ package com.casaService.casaService.repository;
 
 import com.casaService.casaService.dto.CustomerAccountBalance;
 import com.casaService.casaService.model.BalanceResponse;
+import com.casaService.casaService.model.BalanceUpdateRequest;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
@@ -12,13 +13,18 @@ public class BalanceRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public void getLockOnAccount(Integer CustomerACNo)
+    public BalanceUpdateRequest updateOnlineBalance(BalanceUpdateRequest balanceUpdateRequest)
     {
-        CustomerAccountBalance customerAccountBalance = entityManager.find(CustomerAccountBalance.class, CustomerACNo, LockModeType.PESSIMISTIC_WRITE);
-        customerAccountBalance.setAccountBalance(customerAccountBalance.getAccountBalance()+100);
-        entityManager.persist(customerAccountBalance);
+        CustomerAccountBalance customerAccountBalance = entityManager.find(CustomerAccountBalance.class, balanceUpdateRequest.getCustomerAccNo(), LockModeType.PESSIMISTIC_WRITE);
+        if(getAccountBalance(balanceUpdateRequest.getCustomerAccNo()).getAccountBalance() - balanceUpdateRequest.getAmount() >0)
+        {
+            customerAccountBalance.setAccountBalance(customerAccountBalance.getAccountBalance()-balanceUpdateRequest.getAmount());
+            entityManager.persist(customerAccountBalance);
+
+        }
         entityManager.flush();
         entityManager.lock(customerAccountBalance, LockModeType.NONE);
+        return balanceUpdateRequest;
     }
 
     public void saveNewAccount(CustomerAccountBalance customerAccountBalance)
