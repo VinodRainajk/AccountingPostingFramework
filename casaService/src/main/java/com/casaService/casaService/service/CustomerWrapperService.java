@@ -1,42 +1,60 @@
 package com.casaService.casaService.service;
 
-import com.casaService.casaService.model.BalanceResponse;
-import com.casaService.casaService.model.BalanceUpdateRequest;
-import com.casaService.casaService.model.CustomerAccountModel;
-import com.casaService.casaService.model.DebitCreditEnum;
+import com.casaService.casaService.exception.AccountCustomException;
+import com.casaService.casaService.exception.CustomAccountExceptionResponse;
+import com.casaService.casaService.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CustomerWrapperService {
-    private final CustomerInfoService customerInfoService;
+    private final CustomerAccountService customerAccountService;
     private final AccountBalanceService accountBalanceService;
 
-
+    private final AccountCustomException accountCustomException= new AccountCustomException();
     @Autowired
-    public CustomerWrapperService(CustomerInfoService customerInfoService,AccountBalanceService accountBalanceService) {
-        this.customerInfoService = customerInfoService;
+    public CustomerWrapperService(CustomerAccountService customerAccountService, AccountBalanceService accountBalanceService) {
+        this.customerAccountService = customerAccountService;
         this.accountBalanceService = accountBalanceService;
     }
 
     public CustomerAccountModel createNewAccount(CustomerAccountModel customerAccountModel)
     {
         System.out.println( "wrapper "+ customerAccountModel.getCustomerName());
-        return customerInfoService.createNewAccount(customerAccountModel);
+        return customerAccountService.createNewAccount(customerAccountModel);
     }
 
     public CustomerAccountModel getAccountDetails(Integer accountNo)
     {
-        return customerInfoService.getAccountDetails(accountNo);
+        return customerAccountService.getAccountDetails(accountNo);
     }
 
     public BalanceResponse getAccountBalance(Integer accountNo)
     {
-        return customerInfoService.getAccountBalance(accountNo);
+        CustomerAccountModel customerAccountModel = getAccountDetails(accountNo);
+        if(customerAccountModel.getAccountStatus().equals("CLOSE"))
+        {
+            accountCustomException.setStatusCode(HttpStatus.EXPECTATION_FAILED);
+            accountCustomException.addAccountException("AF-Cust-04","The AccountNumber is Closed "+accountNo);
+            throw accountCustomException;
+        }
+
+        return customerAccountService.getAccountBalance(accountNo);
     }
 
-    public BalanceUpdateRequest updateCustomerBalance(BalanceUpdateRequest balanceUpdateRequest)
+    public ResponseEntity updateCustomerBalance(BalanceUpdateRequest balanceUpdateRequest)
     {
+        CustomerAccountModel customerAccountModel = customerAccountService.getAccountDetails(balanceUpdateRequest.getCustomerAccNo());
+
+        if(customerAccountModel.getAccountStatus().equals("CLOSE"))
+        {
+            accountCustomException.setStatusCode(HttpStatus.EXPECTATION_FAILED);
+            accountCustomException.addAccountException("AF-Cust-05","The AccountNumber is Closed "+customerAccountModel.getCustomerAccNo());
+            throw accountCustomException;
+        }
+
        if(balanceUpdateRequest.getDrcr().equals(DebitCreditEnum.valueOf("DEBIT"))
                || ( balanceUpdateRequest.getDrcr().equals(DebitCreditEnum.valueOf("CREDIT"))
                     && balanceUpdateRequest.getAmount()<0
@@ -48,5 +66,10 @@ public class CustomerWrapperService {
        {
          return accountBalanceService.updateOfflineBalance(balanceUpdateRequest);
        }
+    }
+
+    public ResponseEntity closeCustomerAccount(Integer CustomerAccount)
+    {
+        return customerAccountService.closeCustomerAccount(CustomerAccount);
     }
 }

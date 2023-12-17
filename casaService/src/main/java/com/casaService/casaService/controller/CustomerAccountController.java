@@ -6,6 +6,7 @@ import com.casaService.casaService.model.CustomerAccountModel;
 import com.casaService.casaService.service.AccountBalanceService;
 import com.casaService.casaService.service.CustomerWrapperService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,7 +22,7 @@ public class CustomerAccountController {
     }
 
     @PostMapping("/balanceUpdate")
-    public BalanceUpdateRequest updateCustomerBalance(@RequestBody BalanceUpdateRequest balanceUpdateRequest)
+    public ResponseEntity updateCustomerBalance(@RequestBody BalanceUpdateRequest balanceUpdateRequest)
     {
        return customerWrapperService.updateCustomerBalance(balanceUpdateRequest);
        // accountBalanceOnlineService.getLockonAccount(123);
@@ -45,4 +46,11 @@ public class CustomerAccountController {
      {
          return customerWrapperService.getAccountBalance(AccountNumber);
      }
+
+    @PostMapping("/closeAccount/{accountID}")
+    public ResponseEntity closeAccount(@PathVariable("accountID") Integer AccountNumber)
+    {
+        return customerWrapperService.closeCustomerAccount(AccountNumber);
+        // accountBalanceOnlineService.getLockonAccount(123);
+    }
 }

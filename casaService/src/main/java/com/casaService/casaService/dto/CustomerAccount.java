@@ -26,4 +26,7 @@ public class CustomerAccount {
     @Column
     String photo;
 
+    @Column
+    String accountStatus;
+
 }

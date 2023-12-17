@@ -8,6 +8,16 @@ public class CustomerAccountModel {
     String customerName;
     String photo;
 
+    public String getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(String accountStatus) {
+        this.accountStatus = accountStatus;
+    }
+
+    String accountStatus;
+
     public Integer getCustomerAccNo() {
         return customerAccNo;
     }
