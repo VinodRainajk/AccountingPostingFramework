@@ -1,22 +1,10 @@
-package com.casaService.casaService.model;
+package com.accountingProcessor.accountingProcessor.dto;
 
-
-public class CustomerAccountModel {
-
+public class CustomerAccount {
     Integer customerAccNo;
-
     String customerName;
     String photo;
     String accountStatus;
-    public String getAccountStatus() {
-        return accountStatus;
-    }
-
-    public void setAccountStatus(String accountStatus) {
-        this.accountStatus = accountStatus;
-    }
-
-
 
     public Integer getCustomerAccNo() {
         return customerAccNo;
@@ -42,13 +30,11 @@ public class CustomerAccountModel {
         this.photo = photo;
     }
 
+    public String getAccountStatus() {
+        return accountStatus;
+    }
 
-    public boolean isValidForTransaction()
-    {
-        if(this.getAccountStatus().equals("CLOSE"))
-        {
-            return false;
-        }
-        return true;
+    public void setAccountStatus(String accountStatus) {
+        this.accountStatus = accountStatus;
     }
 }

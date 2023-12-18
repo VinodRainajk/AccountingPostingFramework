@@ -28,11 +28,14 @@ public class AccountingEntries {
     @Column
     private Double exchRate;
     @Column
-    private Double fcyAmount;
+    private Double acyAmount;
     @Column
-    private String fccy;
+    private String accy;
     @Column
     private String lccy;
+
+    @Column
+    private Integer custAccno;
 
 
 }

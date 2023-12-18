@@ -4,17 +4,17 @@ public class CustomAccountExceptionResponse {
     String error_code;
     String message;
 
-    public CustomAccountExceptionResponse(String errors_code, String message) {
-        this.error_code = errors_code;
+    public CustomAccountExceptionResponse(String error_code, String message) {
+        this.error_code = error_code;
         this.message = message;
     }
 
-    public String getErrors_code() {
+    public String getError_code() {
         return error_code;
     }
 
-    public void setErrors_code(String errors_code) {
-        this.error_code = errors_code;
+    public void setError_code(String error_code) {
+        this.error_code = error_code;
     }
 
     public String getMessage() {

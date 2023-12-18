@@ -3,15 +3,21 @@ package com.casaService.casaService.service;
 import com.casaService.casaService.exception.AccountCustomException;
 import com.casaService.casaService.exception.CustomAccountExceptionResponse;
 import com.casaService.casaService.model.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class CustomerWrapperService {
     private final CustomerAccountService customerAccountService;
     private final AccountBalanceService accountBalanceService;
+
+    private CustomerAccountResponse customerAccountResponse = new CustomerAccountResponse();
 
     private final AccountCustomException accountCustomException= new AccountCustomException();
     @Autowired
@@ -43,8 +49,8 @@ public class CustomerWrapperService {
 
         return customerAccountService.getAccountBalance(accountNo);
     }
-
-    public ResponseEntity updateCustomerBalance(BalanceUpdateRequest balanceUpdateRequest)
+/*
+    public ResponseEntity updateCustomerBalance(List<BalanceUpdateRequest> balanceUpdateRequest)
     {
         CustomerAccountModel customerAccountModel = customerAccountService.getAccountDetails(balanceUpdateRequest.getCustomerAccNo());
 
@@ -67,9 +73,52 @@ public class CustomerWrapperService {
          return accountBalanceService.updateOfflineBalance(balanceUpdateRequest);
        }
     }
-
+*/
     public ResponseEntity closeCustomerAccount(Integer CustomerAccount)
     {
         return customerAccountService.closeCustomerAccount(CustomerAccount);
     }
+
+    @Transactional
+    public ResponseEntity multiBalanceUpdate(List<BalanceUpdateRequest> balanceUpdList)
+    {
+        // Validate the Transaction
+        // Split Send Credit First
+        // then Debit
+        // Perform Final Check if Success full
+        List<BalanceUpdateRequest> debitBalanceUpdate = new ArrayList<>();
+
+        for(int idx =0 ; idx<balanceUpdList.size(); idx++ )
+        {
+            CustomerAccountModel customerAccountModel = customerAccountService.getAccountDetails(balanceUpdList.get(idx).getCustomerAccNo());
+            if(!customerAccountModel.isValidForTransaction())
+            {
+                accountCustomException.setStatusCode(HttpStatus.EXPECTATION_FAILED);
+                accountCustomException.addAccountException("AF-Cust-05","The AccountNumber is Closed "+customerAccountModel.getCustomerAccNo());
+                throw accountCustomException;
+            } else
+            {
+                if(balanceUpdList.get(idx).getDrcr().equals(DebitCreditEnum.valueOf("CREDIT")))
+                {
+                     accountBalanceService.updateOfflineBalance(balanceUpdList.get(idx));
+                } else
+                {
+                    debitBalanceUpdate.add(balanceUpdList.get(idx));
+                }
+            }
+        }
+
+        if(debitBalanceUpdate.size()>0)
+        {
+            accountBalanceService.updateOnlineBalance(debitBalanceUpdate);
+        }
+
+        return CustomerAccountResponse
+                .generateResponse("Successfully Processed Transactions"
+                                 ,HttpStatus.OK
+                                ,balanceUpdList);
+    }
+
+
+
 }

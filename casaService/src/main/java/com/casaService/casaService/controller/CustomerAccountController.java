@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 public class CustomerAccountController {
 
@@ -21,11 +24,28 @@ public class CustomerAccountController {
         this.customerWrapperService = customerWrapperService;
     }
 
-    @PostMapping("/balanceUpdate")
+    @PostMapping("/singlebalanceUpdate")
     public ResponseEntity updateCustomerBalance(@RequestBody BalanceUpdateRequest balanceUpdateRequest)
     {
-       return customerWrapperService.updateCustomerBalance(balanceUpdateRequest);
-       // accountBalanceOnlineService.getLockonAccount(123);
+        List<BalanceUpdateRequest> multiBalanceUpdate = new ArrayList<>();
+        multiBalanceUpdate.add(balanceUpdateRequest);
+       return customerWrapperService.multiBalanceUpdate(multiBalanceUpdate);
+
+    }
+
+    @PostMapping("/multibalanceUpdate")
+    public ResponseEntity updateCustomerBalance(@RequestBody List<BalanceUpdateRequest> balanceUpdateReqList)
+    {
+        return customerWrapperService.multiBalanceUpdate(balanceUpdateReqList);
+
+    }
+
+
+    @PostMapping("/multiBalanceUpdate")
+    public ResponseEntity multiBalanceUpdate(@RequestBody List<BalanceUpdateRequest> balanceUpdaList)
+    {
+        return customerWrapperService.multiBalanceUpdate(balanceUpdaList);
+
     }
 
     @PostMapping("/newAccount")
@@ -51,6 +71,5 @@ public class CustomerAccountController {
     public ResponseEntity closeAccount(@PathVariable("accountID") Integer AccountNumber)
     {
         return customerWrapperService.closeCustomerAccount(AccountNumber);
-        // accountBalanceOnlineService.getLockonAccount(123);
     }
 }

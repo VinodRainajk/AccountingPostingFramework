@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AccountBalanceService {
 
@@ -27,22 +29,20 @@ public class AccountBalanceService {
         this.custBalOfflineRepo = custBalOfflineRepo;
     }
 
-    @Transactional
-    public ResponseEntity updateOnlineBalance(BalanceUpdateRequest balanceUpdateRequest)
+
+    public List<BalanceUpdateRequest> updateOnlineBalance(List<BalanceUpdateRequest> balanceUpdateRequestlist)
     {
         System.out.println("Inside  updateOnlineBalance");
-       return balanceRepository.updateOnlineBalance(balanceUpdateRequest);
+       return balanceRepository.updateOnlineBalance(balanceUpdateRequestlist);
     }
 
-    @Transactional
-    public ResponseEntity updateOfflineBalance(BalanceUpdateRequest balanceUpdateRequest)
+
+    public BalanceUpdateRequest updateOfflineBalance(BalanceUpdateRequest balanceUpdateRequest)
     {
         System.out.println("Inside  updateOfflineBalance");
         CustomerAccountOfflineBalance customerAccountOfflineBalance = maper.map(balanceUpdateRequest, CustomerAccountOfflineBalance.class);
         customerAccountOfflineBalance.setStatus("U");
         CustomerAccountOfflineBalance returnedval=  custBalOfflineRepo.save(customerAccountOfflineBalance);
-        return   CustomerAccountResponse.generateResponse("Successfully Debited the account", HttpStatus.OK,maper.map(returnedval,BalanceUpdateRequest.class) );
-
-
+        return  balanceUpdateRequest;
     }
 }

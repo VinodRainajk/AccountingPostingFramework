@@ -1,4 +1,4 @@
-package com.accountingProcessor.accountingProcessor.clients;
+package com.accountingProcessor.accountingProcessor.feingclients;
 
 import com.accountingProcessor.accountingProcessor.dto.CurrencyExchangeRate;
 import org.springframework.cloud.openfeign.FeignClient;

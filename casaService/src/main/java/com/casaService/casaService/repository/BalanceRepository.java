@@ -6,40 +6,45 @@ import com.casaService.casaService.model.BalanceResponse;
 import com.casaService.casaService.model.BalanceUpdateRequest;
 import com.casaService.casaService.model.CustomerAccountResponse;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Repository
 public class BalanceRepository {
     @PersistenceContext
     private EntityManager entityManager;
-    private ResponseEntity balanceUpdateResponse;
     private final AccountCustomException accountCustomException = new AccountCustomException();
 
-    public ResponseEntity updateOnlineBalance(BalanceUpdateRequest balanceUpdateRequest)
+
+    public List<BalanceUpdateRequest> updateOnlineBalance(List<BalanceUpdateRequest> balanceUpdateRequest)
     {
 
-        CustomerAccountBalance customerAccountBalance = entityManager.find(CustomerAccountBalance.class, balanceUpdateRequest.getCustomerAccNo(), LockModeType.PESSIMISTIC_WRITE);
-        System.out.println("Account Balance is "+getAccountBalance(balanceUpdateRequest.getCustomerAccNo()).getAccountBalance());
-        if(getAccountBalance(balanceUpdateRequest.getCustomerAccNo()).getAccountBalance() - balanceUpdateRequest.getAmount() >= 0)
-        {
-            customerAccountBalance.setAccountBalance(customerAccountBalance.getAccountBalance()-balanceUpdateRequest.getAmount());
-            entityManager.persist(customerAccountBalance);
-            balanceUpdateResponse = CustomerAccountResponse.generateResponse("Successfully Debited the account", HttpStatus.OK,balanceUpdateRequest );
-            entityManager.flush();
-            entityManager.lock(customerAccountBalance, LockModeType.NONE);
+      for(int idx= 0; idx< balanceUpdateRequest.size(); idx++)
+       {
+         CustomerAccountBalance customerAccountBalance = entityManager.find(CustomerAccountBalance.class, balanceUpdateRequest.get(idx).getCustomerAccNo(), LockModeType.PESSIMISTIC_WRITE);
 
-        }else
-        {
-            accountCustomException.setStatusCode(HttpStatus.EXPECTATION_FAILED);
-            accountCustomException.addAccountException("AF-ACC-03","Account Balance is Not Sufficient");
-            throw accountCustomException;
-        }
 
-        return balanceUpdateResponse;
+         System.out.println("Account Balance is "+getAccountBalance(balanceUpdateRequest.get(idx).getCustomerAccNo()).getAccountBalance());
+         if(getAccountBalance(balanceUpdateRequest.get(idx).getCustomerAccNo()).getAccountBalance() - balanceUpdateRequest.get(idx).getAmount() >= 0)
+         {
+             customerAccountBalance.setAccountBalance(customerAccountBalance.getAccountBalance()-balanceUpdateRequest.get(idx).getAmount());
+             entityManager.persist(customerAccountBalance);
+         }else
+         {
+             accountCustomException.setStatusCode(HttpStatus.EXPECTATION_FAILED);
+             accountCustomException.addAccountException("AF-ACC-03","Insufficient Account Balance in Account"+balanceUpdateRequest.get(idx).getCustomerAccNo());
+             throw accountCustomException;
+         }
+       }
+        entityManager.flush();
+       return balanceUpdateRequest;
     }
 
     public void saveNewAccount(CustomerAccountBalance customerAccountBalance)
