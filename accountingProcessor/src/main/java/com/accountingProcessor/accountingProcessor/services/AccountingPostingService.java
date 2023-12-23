@@ -1,6 +1,7 @@
 package com.accountingProcessor.accountingProcessor.services;
 
-import com.accountingProcessor.accountingProcessor.dto.AccountBalanceUpdateRequest;
+import com.accountingProcessor.accountingProcessor.dto.BalanceUpdateRequest;
+import com.accountingProcessor.accountingProcessor.dto.DebitCreditEnum;
 import com.accountingProcessor.accountingProcessor.feingclients.CasaServiceClient;
 import com.accountingProcessor.accountingProcessor.feingclients.ExchangeRateClient;
 import com.accountingProcessor.accountingProcessor.dto.AccountingEntries;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
@@ -71,20 +73,35 @@ public class AccountingPostingService {
             }
 
 
-            List<AccountBalanceUpdateRequest> balanceUpdateReqList = txnList
+          /* List<BalanceUpdateRequest> balanceUpdateReqList = txnList
                                                                      .stream()
-                                                                     .map((a) -> new AccountBalanceUpdateRequest(a.getTxnRefNo(),a.getCustAccno(),a.getDrcr(),a.getAcyAmount()))
+                                                                     .map((a) -> new BalanceUpdateRequest(a.getTxnRefNo(),a.getCustAccno(), a.getDrcr().toString(),a.getAcyAmount()))
                                                                      .collect(Collectors.toList());
 
+           */
+            ModelMapper modelMapper = new ModelMapper();
 
-            ResponseEntity<List<AccountBalanceUpdateRequest>> casaBalanceUpdateResponse = casaServiceClient.updateCustomerbalance(balanceUpdateReqList);
+            BalanceUpdateRequest balanceUpdateReq= new BalanceUpdateRequest(txnList.get(0).getTxnRefNo(),txnList.get(0).getCustAccno(),txnList.get(0).getDrcr(),txnList.get(0).getAcyAmount());
+            System.out.println(balanceUpdateReq);
+            List<BalanceUpdateRequest> BalanceUpdateRequestList = new ArrayList<>();
+            BalanceUpdateRequestList.add(balanceUpdateReq);
+            //casaServiceClient.updateCustomerbalance(balanceUpdateReqList);
+            ResponseEntity<Map<String,Object>> casaBalanceUpdateResponse = casaServiceClient.updatemultiCustomerbalance(BalanceUpdateRequestList);
 
-            HttpStatusCode statusCode = casaBalanceUpdateResponse.getStatusCode();
-          //  String message = casaBalanceUpdateResponse.
+            System.out.println("vinod 123 ");
+
+
+            System.out.println("list of request "+ casaBalanceUpdateResponse);
+            HttpStatusCode statusCode = HttpStatus.resolve((int)casaBalanceUpdateResponse.getBody().get("status"));
+            List<BalanceUpdateRequest> responseforRequest = (List<BalanceUpdateRequest>)casaBalanceUpdateResponse.getBody().get("data");
+            System.out.println("casaBalanceUpdateResponse.getBody() "+casaBalanceUpdateResponse.getBody().get("status"));
+            System.out.println("list of request "+ responseforRequest);
 
             if (!statusCode.is2xxSuccessful()) {
-                return TransactionResponseModel.generateResponse("Failed To Process Request", HttpStatus.EXPECTATION_FAILED,txnList);
+                return TransactionResponseModel.generateResponse("Failed To Process Request " + casaBalanceUpdateResponse.getBody().get("message"), HttpStatus.EXPECTATION_FAILED,txnList);
             }
+
+
 
             List<AccountingEntries> accountingEntriesList = txnList
                     .stream()

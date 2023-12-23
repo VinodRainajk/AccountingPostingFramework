@@ -1,10 +1,20 @@
 package com.accountingProcessor.accountingProcessor.dto;
 
-public class AccountBalanceUpdateRequest {
+public class BalanceUpdateRequest {
     String txnRefno;
     Integer customerAccNo;
     DebitCreditEnum drcr;
     Double amount;
+
+    @Override
+    public String toString() {
+        return "BalanceUpdateRequest{" +
+                "txnRefno='" + txnRefno + '\'' +
+                ", customerAccNo=" + customerAccNo +
+                ", drcr=" + drcr +
+                ", amount=" + amount +
+                '}';
+    }
 
     public String getTxnRefno() {
         return txnRefno;
@@ -14,11 +24,11 @@ public class AccountBalanceUpdateRequest {
         this.txnRefno = txnRefno;
     }
 
-    public AccountBalanceUpdateRequest() {
+    public BalanceUpdateRequest() {
 
     }
 
-    public AccountBalanceUpdateRequest(String txnRefno, Integer customerAccNo, DebitCreditEnum drcr, Double amount) {
+    public BalanceUpdateRequest(String txnRefno, Integer customerAccNo, DebitCreditEnum drcr, Double amount) {
         this.txnRefno = txnRefno;
         this.customerAccNo = customerAccNo;
         this.drcr = drcr;

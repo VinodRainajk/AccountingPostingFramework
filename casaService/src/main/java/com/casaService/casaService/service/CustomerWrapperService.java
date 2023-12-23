@@ -43,7 +43,7 @@ public class CustomerWrapperService {
         if(customerAccountModel.getAccountStatus().equals("CLOSE"))
         {
             accountCustomException.setStatusCode(HttpStatus.EXPECTATION_FAILED);
-            accountCustomException.addAccountException("AF-Cust-04","The AccountNumber is Closed "+accountNo);
+            accountCustomException.setCustomAccountExceptionResponse( new CustomAccountExceptionResponse("AF-Cust-04","The AccountNumber is Closed "+accountNo));
             throw accountCustomException;
         }
 
@@ -94,7 +94,7 @@ public class CustomerWrapperService {
             if(!customerAccountModel.isValidForTransaction())
             {
                 accountCustomException.setStatusCode(HttpStatus.EXPECTATION_FAILED);
-                accountCustomException.addAccountException("AF-Cust-05","The AccountNumber is Closed "+customerAccountModel.getCustomerAccNo());
+                accountCustomException.setCustomAccountExceptionResponse( new CustomAccountExceptionResponse("AF-Cust-05","The AccountNumber is Closed "+customerAccountModel.getCustomerAccNo()));
                 throw accountCustomException;
             } else
             {
@@ -113,8 +113,7 @@ public class CustomerWrapperService {
             accountBalanceService.updateOnlineBalance(debitBalanceUpdate);
         }
 
-        return CustomerAccountResponse
-                .generateResponse("Successfully Processed Transactions"
+        return customerAccountResponse.generateResponse("Successfully Processed Transactions"
                                  ,HttpStatus.OK
                                 ,balanceUpdList);
     }

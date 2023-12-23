@@ -1,9 +1,8 @@
-package com.casaService.casaService.exception;
+package com.accountingProcessor.accountingProcessor.exceptions;
 
 
-import lombok.*;
-
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 
 @Getter

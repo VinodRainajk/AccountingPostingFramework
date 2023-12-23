@@ -1,17 +1,18 @@
 package com.accountingProcessor.accountingProcessor.feingclients;
 
 import com.accountingProcessor.accountingProcessor.dto.AccountBalanceResponse;
-import com.accountingProcessor.accountingProcessor.dto.AccountBalanceUpdateRequest;
-import com.accountingProcessor.accountingProcessor.dto.CurrencyExchangeRate;
+import com.accountingProcessor.accountingProcessor.dto.BalanceUpdateRequest;
 import com.accountingProcessor.accountingProcessor.dto.CustomerAccount;
+import com.accountingProcessor.accountingProcessor.model.TransactionResponseModel;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 
 @FeignClient("CASA-ACCOUNTS-SERVICE")
 public interface CasaServiceClient {
@@ -22,6 +23,9 @@ public interface CasaServiceClient {
     @GetMapping("/getAccountBalance/{accountID}")
     AccountBalanceResponse getAccountBalance(@PathVariable("customerAccNo")  Integer customerAccNo);
 
+    @PostMapping("/singlebalanceUpdate")
+    void updateCustomerbalance( @RequestBody BalanceUpdateRequest balanceUpdateRequest);
+
     @PostMapping("/multibalanceUpdate")
-    ResponseEntity updateCustomerbalance(@RequestParam List<AccountBalanceUpdateRequest> accountBalanceUpdateRequest);
+    ResponseEntity<Map<String,Object>> updatemultiCustomerbalance(@RequestBody List<BalanceUpdateRequest> balanceUpdateRequest);
 }

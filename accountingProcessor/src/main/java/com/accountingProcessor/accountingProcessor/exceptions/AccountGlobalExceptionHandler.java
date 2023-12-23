@@ -1,4 +1,4 @@
-package com.casaService.casaService.exception;
+package com.accountingProcessor.accountingProcessor.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

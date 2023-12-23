@@ -1,6 +1,8 @@
 package com.casaService.casaService.model;
 
 
+import org.springframework.data.annotation.Transient;
+
 public class CustomerAccountModel {
 
     Integer customerAccNo;
@@ -43,6 +45,7 @@ public class CustomerAccountModel {
     }
 
 
+    @Transient
     public boolean isValidForTransaction()
     {
         if(this.getAccountStatus().equals("CLOSE"))

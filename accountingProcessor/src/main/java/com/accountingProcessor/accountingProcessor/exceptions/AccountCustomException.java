@@ -1,9 +1,6 @@
-package com.casaService.casaService.exception;
+package com.accountingProcessor.accountingProcessor.exceptions;
 
 import org.springframework.http.HttpStatus;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AccountCustomException extends RuntimeException{
 
@@ -31,6 +28,11 @@ public class AccountCustomException extends RuntimeException{
     }
 
 
-
-
+    @Override
+    public String toString() {
+        return "AccountCustomException{" +
+                "statusCode=" + statusCode +
+                ", customAccountExceptionRespone=" + customAccountExceptionRespone +
+                '}';
+    }
 }

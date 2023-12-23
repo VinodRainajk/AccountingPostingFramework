@@ -6,11 +6,15 @@ import com.casaService.casaService.model.CustomerAccountModel;
 import com.casaService.casaService.service.AccountBalanceService;
 import com.casaService.casaService.service.CustomerWrapperService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 public class CustomerAccountController {
@@ -23,30 +27,42 @@ public class CustomerAccountController {
         this.accountBalanceService = accountBalanceService;
         this.customerWrapperService = customerWrapperService;
     }
-
-    @PostMapping("/singlebalanceUpdate")
-    public ResponseEntity updateCustomerBalance(@RequestBody BalanceUpdateRequest balanceUpdateRequest)
+/*
+    @PostMapping(path ="/singlebalanceUpdate", consumes = "application/x-www-form-urlencoded")
+    public void updateCustomerBalance( BalanceUpdateRequest balanceUpdateRequest)
     {
         List<BalanceUpdateRequest> multiBalanceUpdate = new ArrayList<>();
         multiBalanceUpdate.add(balanceUpdateRequest);
-       return customerWrapperService.multiBalanceUpdate(multiBalanceUpdate);
+        ResponseEntity ResponseEntity=  customerWrapperService.multiBalanceUpdate(multiBalanceUpdate);
+
+    }
+*/
+    @PostMapping(path ="/singlebalanceUpdate")
+    public void updatesingleCustomerBalance(@RequestBody BalanceUpdateRequest balanceUpdateRequest)
+    {
+        List<BalanceUpdateRequest> multiBalanceUpdate = new ArrayList<>();
+        multiBalanceUpdate.add(balanceUpdateRequest);
+        ResponseEntity ResponseEntity=  customerWrapperService.multiBalanceUpdate(multiBalanceUpdate);
 
     }
 
-    @PostMapping("/multibalanceUpdate")
-    public ResponseEntity updateCustomerBalance(@RequestBody List<BalanceUpdateRequest> balanceUpdateReqList)
+    @PostMapping(path ="/multibalanceUpdate")
+    public ResponseEntity updateCustomerBalance( @RequestBody List<BalanceUpdateRequest> balanceUpdateReqList)
     {
         return customerWrapperService.multiBalanceUpdate(balanceUpdateReqList);
 
     }
 
 
+/*
     @PostMapping("/multiBalanceUpdate")
     public ResponseEntity multiBalanceUpdate(@RequestBody List<BalanceUpdateRequest> balanceUpdaList)
     {
         return customerWrapperService.multiBalanceUpdate(balanceUpdaList);
 
     }
+
+ */
 
     @PostMapping("/newAccount")
     public CustomerAccountModel createNewAccount(@RequestBody CustomerAccountModel customerAccountModel)

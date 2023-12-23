@@ -62,7 +62,7 @@ public class CustomerAccountService {
         if(accountentity == null || accountentity.getCustomerAccNo() ==null)
         {
              accountCustomException.setStatusCode(HttpStatus.NOT_FOUND);
-             accountCustomException.addAccountException("AF-ACC-001","Account number does not exist");
+             accountCustomException.setCustomAccountExceptionResponse(new CustomAccountExceptionResponse("AF-ACC-001","Account number does not exist"));
             throw accountCustomException;
         }
         return maper.map(accountentity,CustomerAccountModel.class);
@@ -78,7 +78,7 @@ public class CustomerAccountService {
          if(!balanceRepository.getAccountBalance(accountNo).getAccountBalance().equals(0D))
          {
              accountCustomException.setStatusCode(HttpStatus.EXPECTATION_FAILED);
-             accountCustomException.addAccountException("AF-AC-003","Cannot Close Account Balance > 0");
+             accountCustomException.setCustomAccountExceptionResponse(new CustomAccountExceptionResponse("AF-AC-003","Cannot Close Account Balance > 0"));
              throw accountCustomException;
          };
         CustomerAccount customerAccount = customerAccountRepository.getReferenceById(accountNo);

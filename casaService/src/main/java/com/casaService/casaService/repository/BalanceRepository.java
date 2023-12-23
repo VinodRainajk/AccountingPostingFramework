@@ -2,6 +2,7 @@ package com.casaService.casaService.repository;
 
 import com.casaService.casaService.dto.CustomerAccountBalance;
 import com.casaService.casaService.exception.AccountCustomException;
+import com.casaService.casaService.exception.CustomAccountExceptionResponse;
 import com.casaService.casaService.model.BalanceResponse;
 import com.casaService.casaService.model.BalanceUpdateRequest;
 import com.casaService.casaService.model.CustomerAccountResponse;
@@ -39,7 +40,7 @@ public class BalanceRepository {
          }else
          {
              accountCustomException.setStatusCode(HttpStatus.EXPECTATION_FAILED);
-             accountCustomException.addAccountException("AF-ACC-03","Insufficient Account Balance in Account"+balanceUpdateRequest.get(idx).getCustomerAccNo());
+             accountCustomException.setCustomAccountExceptionResponse(new CustomAccountExceptionResponse("AF-ACC-03","Insufficient Account Balance in Account"+balanceUpdateRequest.get(idx).getCustomerAccNo()));
              throw accountCustomException;
          }
        }
