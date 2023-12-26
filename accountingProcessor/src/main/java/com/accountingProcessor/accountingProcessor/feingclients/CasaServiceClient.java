@@ -3,7 +3,10 @@ package com.accountingProcessor.accountingProcessor.feingclients;
 import com.accountingProcessor.accountingProcessor.dto.AccountBalanceResponse;
 import com.accountingProcessor.accountingProcessor.dto.BalanceUpdateRequest;
 import com.accountingProcessor.accountingProcessor.dto.CustomerAccount;
+import com.accountingProcessor.accountingProcessor.exceptions.AccountCustomException;
 import com.accountingProcessor.accountingProcessor.model.TransactionResponseModel;
+import com.fasterxml.jackson.core.JsonParseException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,5 +30,19 @@ public interface CasaServiceClient {
     void updateCustomerbalance( @RequestBody BalanceUpdateRequest balanceUpdateRequest);
 
     @PostMapping("/multibalanceUpdate")
+    @CircuitBreaker(name= "accBalCircuitBreaker", fallbackMethod = "balanceUpdateCB")
     ResponseEntity<Map<String,Object>> updatemultiCustomerbalance(@RequestBody List<BalanceUpdateRequest> balanceUpdateRequest);
+
+    default ResponseEntity<Map<String,Object>> balanceUpdateCB(List<BalanceUpdateRequest> balanceUpdateRequest, AccountCustomException exp)
+    {
+        System.out.println(" Inside the custom exeption Circuit Breaker Method " +exp.getCustomAccountExceptionResponse().getMessage());
+        throw exp;
+    }
+
+    default ResponseEntity<Map<String,Object>> balanceUpdateCB(List<BalanceUpdateRequest> balanceUpdateRequest, Exception exp)
+    {
+        System.out.println(" Inside the Circuit Breaker Method");
+        throw new RuntimeException(exp.getMessage());
+    }
+
 }

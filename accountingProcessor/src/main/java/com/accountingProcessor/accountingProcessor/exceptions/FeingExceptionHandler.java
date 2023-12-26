@@ -38,6 +38,7 @@ public class FeingExceptionHandler implements ErrorDecoder {
             System.out.println("result "+result);
 
         } catch (IOException e) {
+           System.out.println("here inside "+e.toString());
             return new Exception(e.getMessage());
         }
         System.out.println("Error in request went through feign client {} "+ exceptionMessage.getMessage());
