@@ -31,26 +31,26 @@ public class AccountGlobalExceptionHandler extends ResponseEntityExceptionHandle
                                                       WebRequest request)
     {
 
-       if(exception instanceof AccountCustomException)
+       if(exception instanceof AccountingCustomException)
         {
-            return ResponseEntity.status(httpStatus).body(((AccountCustomException) exception).getCustomAccountExceptionResponse());
+            return ResponseEntity.status(httpStatus).body(((AccountingCustomException) exception).getCustomAccountExceptionResponse());
         }else
        {
-           AccountGlobalErrorResponse accountGlobalErrorResponse = new AccountGlobalErrorResponse(httpStatus.value(), message);
-           return ResponseEntity.status(httpStatus).body(accountGlobalErrorResponse);
+           AccountingExceptionDetails accountingExceptionDetails = new AccountingExceptionDetails(String.valueOf(httpStatus.value()), message);
+           return ResponseEntity.status(httpStatus).body(accountingExceptionDetails);
        }
 
 
     }
 
-    @ExceptionHandler(AccountCustomException.class)
+    @ExceptionHandler(AccountingCustomException.class)
     //@ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<Object> handleNoSuchElementFoundException(AccountCustomException accountCustomException, WebRequest request) {
+    public ResponseEntity<Object> handleNoSuchElementFoundException(AccountingCustomException accountingCustomException, WebRequest request) {
 
-        if(accountCustomException.getStatusCode()==null)
+        if(accountingCustomException.getStatusCode()==null)
         {
-            accountCustomException.setStatusCode(HttpStatus.NOT_FOUND);
+            accountingCustomException.setStatusCode(HttpStatus.NOT_FOUND);
         }
-        return buildErrorResponse(accountCustomException, accountCustomException.getStatusCode(), request);
+        return buildErrorResponse(accountingCustomException, accountingCustomException.getStatusCode(), request);
     }
 }

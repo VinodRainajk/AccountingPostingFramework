@@ -2,21 +2,21 @@ package com.accountingProcessor.accountingProcessor.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-public class AccountCustomException extends RuntimeException{
+public class AccountingCustomException extends RuntimeException{
 
     private HttpStatus statusCode;
-    private CustomAccountExceptionResponse customAccountExceptionRespone;
+    private AccountingExceptionDetails customAccountExceptionRespone;
 
 
-    public CustomAccountExceptionResponse getCustomAccountExceptionResponse() {
+    public AccountingExceptionDetails getCustomAccountExceptionResponse() {
         return customAccountExceptionRespone;
     }
 
-    public void setCustomAccountExceptionResponse(CustomAccountExceptionResponse customAccountExceptionRespone) {
+    public void setCustomAccountExceptionResponse(AccountingExceptionDetails customAccountExceptionRespone) {
         this.customAccountExceptionRespone = customAccountExceptionRespone;
     }
 
-    public AccountCustomException() {
+    public AccountingCustomException() {
     }
 
     public HttpStatus getStatusCode() {

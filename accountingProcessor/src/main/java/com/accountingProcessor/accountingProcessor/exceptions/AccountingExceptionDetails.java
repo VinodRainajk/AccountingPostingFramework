@@ -1,24 +1,28 @@
 package com.accountingProcessor.accountingProcessor.exceptions;
 
-public class TransactionExceptionResponse {
-
+public class AccountingExceptionDetails {
     String error_code;
+    String message;
 
-    public String getError_code() {
-        return error_code;
-    }
-
-    public TransactionExceptionResponse(String error_code, String message) {
+    public AccountingExceptionDetails(String error_code, String message) {
         this.error_code = error_code;
         this.message = message;
+    }
+    public AccountingExceptionDetails()
+    {
+
     }
 
     @Override
     public String toString() {
-        return "TransactionExceptionResponse{" +
+        return "CustomAccountExceptionResponse{" +
                 "error_code='" + error_code + '\'' +
                 ", message='" + message + '\'' +
                 '}';
+    }
+
+    public String getError_code() {
+        return error_code;
     }
 
     public void setError_code(String error_code) {
@@ -33,5 +37,5 @@ public class TransactionExceptionResponse {
         this.message = message;
     }
 
-    String message;
+
 }
