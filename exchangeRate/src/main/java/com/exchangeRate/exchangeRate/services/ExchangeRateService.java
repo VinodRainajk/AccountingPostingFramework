@@ -1,6 +1,7 @@
 package com.exchangeRate.exchangeRate.services;
 
 import com.exchangeRate.exchangeRate.dto.CurrencyExchangeRate;
+import com.exchangeRate.exchangeRate.exceptions.RateNotMaintained;
 import com.exchangeRate.exchangeRate.model.CurrencyExchangeRateModel;
 import com.exchangeRate.exchangeRate.repository.ExchangeRateRepository;
 import org.modelmapper.ModelMapper;
@@ -26,9 +27,16 @@ public class ExchangeRateService {
         if(!exchangeRates.isPresent())
         {
             exchangeRates = exchangeRateRepository.getExchnageRate(currency2,currency1);
-            CurrencyExchangeRateModel model=  mapper.map(exchangeRates.get(), CurrencyExchangeRateModel.class);
-            model.setExchangeRate(1/model.getExchangeRate());
-            return model;
+            if(exchangeRates.isPresent())
+            {
+                CurrencyExchangeRateModel model=  mapper.map(exchangeRates.get(), CurrencyExchangeRateModel.class);
+                model.setExchangeRate(1/model.getExchangeRate());
+                return model;
+            } else
+            {
+                throw new RateNotMaintained("Exchange Rate Not Maintained for ccy1 "+currency1+" and Ccy2 "+currency2, "AF-CCY-01");
+            }
+
         }else
         {
             return mapper.map(exchangeRates.get(), CurrencyExchangeRateModel.class);

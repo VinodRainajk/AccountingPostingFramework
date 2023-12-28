@@ -1,7 +1,9 @@
 package com.accountingProcessor.accountingProcessor.feingclients;
 
 import com.accountingProcessor.accountingProcessor.dto.CurrencyExchangeRate;
+import com.accountingProcessor.accountingProcessor.model.CurrencyExchangeRateModel;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -9,5 +11,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ExchangeRateClient {
 
     @GetMapping("/getRate")
-    public CurrencyExchangeRate getExchangeRate(@RequestParam("currency1") String currency1, @RequestParam("currency2") String currency2);
+    public ResponseEntity<CurrencyExchangeRateModel> getExchangeRate(@RequestParam("currency1") String currency1, @RequestParam("currency2") String currency2);
 }

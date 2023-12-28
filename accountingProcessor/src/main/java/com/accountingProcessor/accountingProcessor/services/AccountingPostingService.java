@@ -7,6 +7,7 @@ import com.accountingProcessor.accountingProcessor.feingclients.ExchangeRateClie
 import com.accountingProcessor.accountingProcessor.dto.AccountingEntries;
 import com.accountingProcessor.accountingProcessor.dto.CurrencyExchangeRate;
 import com.accountingProcessor.accountingProcessor.model.AccountingModel;
+import com.accountingProcessor.accountingProcessor.model.CurrencyExchangeRateModel;
 import com.accountingProcessor.accountingProcessor.model.TransactionResponseModel;
 import com.accountingProcessor.accountingProcessor.repository.AccountingPostingRepository;
 import jakarta.transaction.Transactional;
@@ -61,24 +62,27 @@ public class AccountingPostingService {
                 {
                     if( txnList.get(idx).getLcyamount()==null || txnList.get(idx).getLcyamount()==0)
                     {
-                        CurrencyExchangeRate exchangeRate = exchangeRateClient.getExchangeRate(txnList.get(idx).getAccy(), txnList.get(idx).getLccy());
+                        ResponseEntity responseEntity = exchangeRateClient.getExchangeRate(txnList.get(idx).getAccy(), txnList.get(idx).getLccy());
+                        System.out.println("responseEntity response "+responseEntity.getStatusCode());
+                        System.out.println("responseEntity getBody "+responseEntity.getBody());
+                        CurrencyExchangeRate exchangeRate = (CurrencyExchangeRate)responseEntity.getBody();
+                        System.out.println("got the exchnage Rate inside IF "+ exchangeRate.getExchangeRate());
                         txnList.get(idx).setExchRate(exchangeRate.getExchangeRate());
                         txnList.get(idx).setLcyamount(exchangeRate.getExchangeRate()*txnList.get(idx).getAcyAmount());
                     } else {
-                        CurrencyExchangeRate exchangeRate = exchangeRateClient.getExchangeRate(txnList.get(idx).getLccy(), txnList.get(idx).getAccy());
-                        txnList.get(idx).setExchRate(exchangeRate.getExchangeRate());
-                        txnList.get(idx).setAcyAmount(exchangeRate.getExchangeRate()*txnList.get(idx).getLcyamount());
+                        ResponseEntity responseEntity = exchangeRateClient.getExchangeRate(txnList.get(idx).getLccy(), txnList.get(idx).getAccy());
+                        System.out.println("else responseEntity response "+responseEntity.getStatusCode());
+                        System.out.println("else responseEntity getBody "+responseEntity.getBody());
+                        CurrencyExchangeRateModel currencyExchangeRateModel =  (CurrencyExchangeRateModel)responseEntity.getBody();
+
+                        //CurrencyExchangeRateModel exchangeRate = responseEntity.getBody();
+                        System.out.println("got the exchnage Rate inside else "+ currencyExchangeRateModel.getExchangeRate());
+                        txnList.get(idx).setExchRate(currencyExchangeRateModel.getExchangeRate());
+                        txnList.get(idx).setAcyAmount(currencyExchangeRateModel.getExchangeRate()*txnList.get(idx).getLcyamount());
                     }
                 }
             }
 
-
-          /* List<BalanceUpdateRequest> balanceUpdateReqList = txnList
-                                                                     .stream()
-                                                                     .map((a) -> new BalanceUpdateRequest(a.getTxnRefNo(),a.getCustAccno(), a.getDrcr().toString(),a.getAcyAmount()))
-                                                                     .collect(Collectors.toList());
-
-           */
             ModelMapper modelMapper = new ModelMapper();
 
             BalanceUpdateRequest balanceUpdateReq= new BalanceUpdateRequest(txnList.get(0).getTxnRefNo(),txnList.get(0).getCustAccno(),txnList.get(0).getDrcr(),txnList.get(0).getAcyAmount());
