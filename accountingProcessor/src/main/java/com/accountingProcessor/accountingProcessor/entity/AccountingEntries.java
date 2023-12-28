@@ -1,11 +1,10 @@
-package com.accountingProcessor.accountingProcessor.dto;
+package com.accountingProcessor.accountingProcessor.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.boot.model.relational.Sequence;
 
 @Entity
 @Getter

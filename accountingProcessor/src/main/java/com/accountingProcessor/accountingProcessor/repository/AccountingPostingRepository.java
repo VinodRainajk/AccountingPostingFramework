@@ -1,6 +1,6 @@
 package com.accountingProcessor.accountingProcessor.repository;
 
-import com.accountingProcessor.accountingProcessor.dto.AccountingEntries;
+import com.accountingProcessor.accountingProcessor.entity.AccountingEntries;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

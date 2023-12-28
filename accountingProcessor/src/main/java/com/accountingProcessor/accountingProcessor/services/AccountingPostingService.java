@@ -1,11 +1,8 @@
 package com.accountingProcessor.accountingProcessor.services;
 
-import com.accountingProcessor.accountingProcessor.dto.BalanceUpdateRequest;
-import com.accountingProcessor.accountingProcessor.dto.DebitCreditEnum;
 import com.accountingProcessor.accountingProcessor.feingclients.CasaServiceClient;
 import com.accountingProcessor.accountingProcessor.feingclients.ExchangeRateClient;
-import com.accountingProcessor.accountingProcessor.dto.AccountingEntries;
-import com.accountingProcessor.accountingProcessor.dto.CurrencyExchangeRate;
+import com.accountingProcessor.accountingProcessor.entity.AccountingEntries;
 import com.accountingProcessor.accountingProcessor.model.AccountingModel;
 import com.accountingProcessor.accountingProcessor.model.CurrencyExchangeRateModel;
 import com.accountingProcessor.accountingProcessor.model.TransactionResponseModel;
@@ -65,10 +62,10 @@ public class AccountingPostingService {
                         ResponseEntity responseEntity = exchangeRateClient.getExchangeRate(txnList.get(idx).getAccy(), txnList.get(idx).getLccy());
                         System.out.println("responseEntity response "+responseEntity.getStatusCode());
                         System.out.println("responseEntity getBody "+responseEntity.getBody());
-                        CurrencyExchangeRate exchangeRate = (CurrencyExchangeRate)responseEntity.getBody();
-                        System.out.println("got the exchnage Rate inside IF "+ exchangeRate.getExchangeRate());
-                        txnList.get(idx).setExchRate(exchangeRate.getExchangeRate());
-                        txnList.get(idx).setLcyamount(exchangeRate.getExchangeRate()*txnList.get(idx).getAcyAmount());
+                        CurrencyExchangeRateModel currencyExchangeRateModel =  (CurrencyExchangeRateModel)responseEntity.getBody();
+                        System.out.println("got the exchnage Rate inside IF "+ currencyExchangeRateModel.getExchangeRate());
+                        txnList.get(idx).setExchRate(currencyExchangeRateModel.getExchangeRate());
+                        txnList.get(idx).setLcyamount(currencyExchangeRateModel.getExchangeRate()*txnList.get(idx).getAcyAmount());
                     } else {
                         ResponseEntity responseEntity = exchangeRateClient.getExchangeRate(txnList.get(idx).getLccy(), txnList.get(idx).getAccy());
                         System.out.println("else responseEntity response "+responseEntity.getStatusCode());
@@ -85,9 +82,9 @@ public class AccountingPostingService {
 
             ModelMapper modelMapper = new ModelMapper();
 
-            BalanceUpdateRequest balanceUpdateReq= new BalanceUpdateRequest(txnList.get(0).getTxnRefNo(),txnList.get(0).getCustAccno(),txnList.get(0).getDrcr(),txnList.get(0).getAcyAmount());
+            AccountingModel.BalanceUpdateRequest balanceUpdateReq= new AccountingModel.BalanceUpdateRequest(txnList.get(0).getTxnRefNo(),txnList.get(0).getCustAccno(),txnList.get(0).getDrcr(),txnList.get(0).getAcyAmount());
             System.out.println(balanceUpdateReq);
-            List<BalanceUpdateRequest> BalanceUpdateRequestList = new ArrayList<>();
+            List<AccountingModel.BalanceUpdateRequest> BalanceUpdateRequestList = new ArrayList<>();
             BalanceUpdateRequestList.add(balanceUpdateReq);
             //casaServiceClient.updateCustomerbalance(balanceUpdateReqList);
             ResponseEntity<Map<String,Object>> casaBalanceUpdateResponse = casaServiceClient.updatemultiCustomerbalance(BalanceUpdateRequestList);
@@ -97,7 +94,7 @@ public class AccountingPostingService {
 
             System.out.println("list of request "+ casaBalanceUpdateResponse);
             HttpStatusCode statusCode = HttpStatus.resolve((int)casaBalanceUpdateResponse.getBody().get("status"));
-            List<BalanceUpdateRequest> responseforRequest = (List<BalanceUpdateRequest>)casaBalanceUpdateResponse.getBody().get("data");
+            List<AccountingModel.BalanceUpdateRequest> responseforRequest = (List<AccountingModel.BalanceUpdateRequest>)casaBalanceUpdateResponse.getBody().get("data");
             System.out.println("casaBalanceUpdateResponse.getBody() "+casaBalanceUpdateResponse.getBody().get("status"));
             System.out.println("list of request "+ responseforRequest);
 
