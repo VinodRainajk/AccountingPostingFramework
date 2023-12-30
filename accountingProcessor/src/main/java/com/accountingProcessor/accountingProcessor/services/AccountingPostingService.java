@@ -1,13 +1,17 @@
 package com.accountingProcessor.accountingProcessor.services;
 
+import com.accountingProcessor.accountingProcessor.AccountingProcessorApplication;
 import com.accountingProcessor.accountingProcessor.feingclients.CasaServiceClient;
 import com.accountingProcessor.accountingProcessor.feingclients.ExchangeRateClient;
 import com.accountingProcessor.accountingProcessor.entity.AccountingEntries;
+import com.accountingProcessor.accountingProcessor.model.AccountBalanceRequest;
 import com.accountingProcessor.accountingProcessor.model.AccountingModel;
 import com.accountingProcessor.accountingProcessor.model.CurrencyExchangeRateModel;
 import com.accountingProcessor.accountingProcessor.model.TransactionResponseModel;
 import com.accountingProcessor.accountingProcessor.repository.AccountingPostingRepository;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,17 +28,20 @@ import java.util.stream.Collectors;
 @Service
 public class AccountingPostingService {
     private AccountingPostingRepository accountingRepository;
-    private ExchangeRateClient exchangeRateClient;
-    private CasaServiceClient casaServiceClient;
+    private ExchangeRate exchangeRate;
+    private AccountBalances accountBalances;
+
+    private static final Logger LOGGER = LogManager.getLogger(AccountingPostingService.class);
+
 
     @Autowired
-    public AccountingPostingService(AccountingPostingRepository accountingRepository, ExchangeRateClient exchangeRateClient,CasaServiceClient casaServiceClient) {
+    public AccountingPostingService(AccountingPostingRepository accountingRepository,
+                                    ExchangeRate exchangeRate,
+                                    AccountBalances accountBalances) {
         this.accountingRepository = accountingRepository;
-        this.exchangeRateClient= exchangeRateClient;
-        this.casaServiceClient = casaServiceClient;
+        this.exchangeRate = exchangeRate;
+        this.accountBalances  = accountBalances;
     }
-
-   BiPredicate<String ,String > checkCurrency = (ccy1,ccy2) -> ccy1 ==ccy2;
 
     public List<AccountingModel> getTransactions(String txnRefNo) {
 
@@ -43,78 +50,58 @@ public class AccountingPostingService {
                 .map((a)-> new ModelMapper().map(a,AccountingModel.class))
                 .collect(Collectors.toList());
     }
-
    @Transactional
     public ResponseEntity saveTransaction(List<AccountingModel> txnList)
         {
-            // Loop through the Transactions
-            // if the LCY = FCy do nothing
-            // else I need to Call the exchange Rate and populate the corresponding Amount
-            // if LCY <> FCY and FCY is Null populate FCY amount
-            // Else Populate LCY Amount
+            LOGGER.info("Inside the Save Transactions");
 
-            for(int idx = 0 ; idx < txnList.size(); idx++)
+           for(int idx = 0 ; idx < txnList.size(); idx++)
             {
-                if( !txnList.get(idx).getLccy().equals(txnList.get(idx).getAccy()))
+                Double derivedExchangeRate = txnList.get(idx).getExchRate();
+                if(derivedExchangeRate== null || derivedExchangeRate ==0)
                 {
-                    if( txnList.get(idx).getLcyamount()==null || txnList.get(idx).getLcyamount()==0)
-                    {
-                        ResponseEntity responseEntity = exchangeRateClient.getExchangeRate(txnList.get(idx).getAccy(), txnList.get(idx).getLccy());
-                        System.out.println("responseEntity response "+responseEntity.getStatusCode());
-                        System.out.println("responseEntity getBody "+responseEntity.getBody());
-                        CurrencyExchangeRateModel currencyExchangeRateModel =  (CurrencyExchangeRateModel)responseEntity.getBody();
-                        System.out.println("got the exchnage Rate inside IF "+ currencyExchangeRateModel.getExchangeRate());
-                        txnList.get(idx).setExchRate(currencyExchangeRateModel.getExchangeRate());
-                        txnList.get(idx).setLcyamount(currencyExchangeRateModel.getExchangeRate()*txnList.get(idx).getAcyAmount());
-                    } else {
-                        ResponseEntity responseEntity = exchangeRateClient.getExchangeRate(txnList.get(idx).getLccy(), txnList.get(idx).getAccy());
-                        System.out.println("else responseEntity response "+responseEntity.getStatusCode());
-                        System.out.println("else responseEntity getBody "+responseEntity.getBody());
-                        CurrencyExchangeRateModel currencyExchangeRateModel =  (CurrencyExchangeRateModel)responseEntity.getBody();
-
-                        //CurrencyExchangeRateModel exchangeRate = responseEntity.getBody();
-                        System.out.println("got the exchnage Rate inside else "+ currencyExchangeRateModel.getExchangeRate());
-                        txnList.get(idx).setExchRate(currencyExchangeRateModel.getExchangeRate());
-                        txnList.get(idx).setAcyAmount(currencyExchangeRateModel.getExchangeRate()*txnList.get(idx).getLcyamount());
-                    }
+                    derivedExchangeRate = exchangeRate.getDerviveExchangeRate(txnList.get(idx).getAccy(), txnList.get(idx).getLccy());
+                    txnList.get(idx).setExchRate(derivedExchangeRate);
                 }
-            }
 
-            ModelMapper modelMapper = new ModelMapper();
-
-            AccountingModel.BalanceUpdateRequest balanceUpdateReq= new AccountingModel.BalanceUpdateRequest(txnList.get(0).getTxnRefNo(),txnList.get(0).getCustAccno(),txnList.get(0).getDrcr(),txnList.get(0).getAcyAmount());
-            System.out.println(balanceUpdateReq);
-            List<AccountingModel.BalanceUpdateRequest> BalanceUpdateRequestList = new ArrayList<>();
-            BalanceUpdateRequestList.add(balanceUpdateReq);
-            //casaServiceClient.updateCustomerbalance(balanceUpdateReqList);
-            ResponseEntity<Map<String,Object>> casaBalanceUpdateResponse = casaServiceClient.updatemultiCustomerbalance(BalanceUpdateRequestList);
-
-            System.out.println("vinod 123 ");
-
-
-            System.out.println("list of request "+ casaBalanceUpdateResponse);
-            HttpStatusCode statusCode = HttpStatus.resolve((int)casaBalanceUpdateResponse.getBody().get("status"));
-            List<AccountingModel.BalanceUpdateRequest> responseforRequest = (List<AccountingModel.BalanceUpdateRequest>)casaBalanceUpdateResponse.getBody().get("data");
-            System.out.println("casaBalanceUpdateResponse.getBody() "+casaBalanceUpdateResponse.getBody().get("status"));
-            System.out.println("list of request "+ responseforRequest);
-
-            if (!statusCode.is2xxSuccessful()) {
-                return TransactionResponseModel.generateResponse("Failed To Process Request " + casaBalanceUpdateResponse.getBody().get("message"), HttpStatus.EXPECTATION_FAILED,txnList);
+                if(txnList.get(idx).getLcyamount() == null || txnList.get(idx).getLcyamount()==0)
+                {
+                    txnList.get(idx).setLcyamount(exchangeRate.getDerviveAmount(derivedExchangeRate,txnList.get(idx).getAcyAmount()));
+                } else if (txnList.get(idx).getAcyAmount() == null || txnList.get(idx).getAcyAmount()==0)
+                {
+                    Double reversedRate = Double.valueOf(1/derivedExchangeRate);
+                    LOGGER.info("reversedRate Rate is "+ reversedRate);
+                    txnList.get(idx).setAcyAmount(exchangeRate.getDerviveAmount(reversedRate, txnList.get(idx).getLcyamount()));
+                }
+                LOGGER.info("Exchange Rate is "+ txnList.get(idx).getExchRate());
+                LOGGER.info("LCY Amount is "+txnList.get(idx).getLcyamount());
+                LOGGER.info("ACY Amount is "+txnList.get(idx).getAcyAmount());
             }
 
 
+            List<AccountBalanceRequest> balanceUpdateRequestList =  txnList
+                                                                    .stream()
+                                                                    .map(a -> new AccountBalanceRequest(a.getTxnRefNo(),a.getCustAccno(),a.getDrcr(),a.getAcyAmount()))
+                                                                    .collect(Collectors.toList());
 
-            List<AccountingEntries> accountingEntriesList = txnList
-                    .stream()
-                    .map((a)-> new ModelMapper().map(a, AccountingEntries.class))
-                    .collect(Collectors.toList());
+           LOGGER.info("Sending the Transactions for balance Update");
+            List<AccountingModel> savedAccounting = new ArrayList<>();
+            if(accountBalances.updateCustomerBalance(balanceUpdateRequestList))
+            {
+                List<AccountingEntries> accountingEntriesList = txnList
+                        .stream()
+                        .map((a)-> new ModelMapper().map(a, AccountingEntries.class))
+                        .collect(Collectors.toList());
 
-             accountingRepository.saveAll(accountingEntriesList)
-                    .stream()
-                    .map((a)-> new ModelMapper().map(a,AccountingModel.class))
-                    .collect(Collectors.toList());
+                savedAccounting =   accountingRepository.saveAll(accountingEntriesList)
+                                                        .stream()
+                                                        .map((a)-> new ModelMapper().map(a,AccountingModel.class))
+                                                        .collect(Collectors.toList());
 
-            return TransactionResponseModel.generateResponse("Successfully To Processed Request", HttpStatus.OK,txnList);
+            }
+
+            LOGGER.info("Successfully processed all Transactions");
+            return TransactionResponseModel.generateResponse("Successfully To Processed Request", HttpStatus.OK,savedAccounting);
 
         }
 }

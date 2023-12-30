@@ -16,6 +16,15 @@ public class CurrencyExchangeRateModel{
         this.exchangeRate = exchangeRate;
     }
 
+    @Override
+    public String toString() {
+        return "CurrencyExchangeRateModel{" +
+                "currency1='" + currency1 + '\'' +
+                ", currency2='" + currency2 + '\'' +
+                ", exchangeRate=" + exchangeRate +
+                '}';
+    }
+
     public CurrencyExchangeRateModel() {
     }
 
@@ -47,12 +56,4 @@ public class CurrencyExchangeRateModel{
 
     double exchangeRate;
 
-    @Override
-    public String toString() {
-        return "CurrencyExchangeRateModel{" +
-                "currency1='" + currency1 + '\'' +
-                ", currency2='" + currency2 + '\'' +
-                ", exchangeRate=" + exchangeRate +
-                '}';
-    }
 }
