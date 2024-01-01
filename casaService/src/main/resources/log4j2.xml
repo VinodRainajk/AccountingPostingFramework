@@ -9,8 +9,8 @@
         </Console>
 
         <RollingFile name="appLog"
-                     fileName="logs/accountingProcessor.log"
-                     filePattern="logs/accountingProcessor-%d{yyyy-MM-dd}-%i.log">
+                     fileName="logs/casaService.log"
+                     filePattern="logs/casaService-%d{yyyy-MM-dd}-%i.log">
             <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
 
             <Policies>
@@ -21,7 +21,7 @@
 
     </Appenders>
     <Loggers>
-        <Logger name="com.accountingProcessor.accountingProcessor" level="debug" additivity="false">
+        <Logger name="com.casaService.casaService" level="debug" additivity="false">
             <AppenderRef ref="appLog" />
             <AppenderRef ref="Console" />
         </Logger>

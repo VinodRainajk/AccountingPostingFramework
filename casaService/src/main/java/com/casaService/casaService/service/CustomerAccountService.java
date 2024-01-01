@@ -10,6 +10,8 @@ import com.casaService.casaService.model.CustomerAccountResponse;
 import com.casaService.casaService.repository.BalanceRepository;
 import com.casaService.casaService.repository.CustomerAccountRepository;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.Optional;
 
 @Service
 public class CustomerAccountService {
+    private static final Logger lOGGER = LogManager.getLogger(CustomerAccountService.class);
     private CustomerAccountRepository customerAccountRepository;
     private BalanceRepository balanceRepository;
     private ModelMapper maper = new ModelMapper();
@@ -37,7 +40,7 @@ public class CustomerAccountService {
     @Transactional
     public CustomerAccountModel createNewAccount(CustomerAccountModel customerAccountModel)
     {
-        System.out.println( "info Service "+ customerAccountModel.getCustomerName());
+        lOGGER.info( "info Service "+ customerAccountModel.getCustomerName());
         customerAccountModel.setAccountStatus("OPEN");
         CustomerAccount customerAccount =  maper.map(customerAccountModel, CustomerAccount.class);
         CustomerAccount accountentity = customerAccountRepository.save(customerAccount);
