@@ -93,4 +93,19 @@ public class AccountingRequest {
 
     private String lccy;
 
+    @Override
+    public String toString() {
+        return "AccountingRequest{" +
+                "txnSrno=" + txnSrno +
+                ", txnRefNo='" + txnRefNo + '\'' +
+                ", extTxnRefNo='" + extTxnRefNo + '\'' +
+                ", drcr=" + drcr +
+                ", lcyamount=" + lcyamount +
+                ", exchRate=" + exchRate +
+                ", acyAmount=" + acyAmount +
+                ", custAccno=" + custAccno +
+                ", accy='" + accy + '\'' +
+                ", lccy='" + lccy + '\'' +
+                '}';
+    }
 }

@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="casaService" />
         <module name="accountingProcessor" />
+        <module name="kafkaPublisherService" />
         <module name="exchangeRate" />
         <module name="discoveryServer" />
       </profile>
@@ -19,6 +20,7 @@
       <module name="discoveryServer" target="17" />
       <module name="exchangeRate" target="17" />
       <module name="ExchangeRateService" target="17" />
+      <module name="kafkaPublisherService" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -28,6 +30,7 @@
       <module name="casaService" options="-parameters" />
       <module name="discoveryServer" options="-parameters" />
       <module name="exchangeRate" options="-parameters" />
+      <module name="kafkaPublisherService" options="-parameters" />
     </option>
   </component>
 </project>

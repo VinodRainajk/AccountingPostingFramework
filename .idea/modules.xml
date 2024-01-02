@@ -8,6 +8,7 @@
       <module fileurl="file://$PROJECT_DIR$/casaService/casaService.iml" filepath="$PROJECT_DIR$/casaService/casaService.iml" />
       <module fileurl="file://$PROJECT_DIR$/discoveryServer/discoveryServer.iml" filepath="$PROJECT_DIR$/discoveryServer/discoveryServer.iml" />
       <module fileurl="file://$PROJECT_DIR$/exchangeRate/exchangeRate.iml" filepath="$PROJECT_DIR$/exchangeRate/exchangeRate.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kafkaPublisherService/kafkaPublisherService.iml" filepath="$PROJECT_DIR$/kafkaPublisherService/kafkaPublisherService.iml" />
     </modules>
   </component>
 </project>
