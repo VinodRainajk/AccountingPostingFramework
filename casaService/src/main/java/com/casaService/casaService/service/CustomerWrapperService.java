@@ -2,6 +2,7 @@ package com.casaService.casaService.service;
 
 import com.casaService.casaService.exception.AccountCustomException;
 import com.casaService.casaService.exception.CustomAccountExceptionResponse;
+import com.casaService.casaService.feingClients.MessagePublisherClient;
 import com.casaService.casaService.model.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,21 @@ public class CustomerWrapperService {
     private CustomerAccountResponse customerAccountResponse = new CustomerAccountResponse();
 
     private final AccountCustomException accountCustomException= new AccountCustomException();
+    private OnlineBalanceImpl onlineBalanceimpl;
+    private OfflineBalanceImpl offlineBalanceimpl;
+    private MessagePublisherClient messagePublisherClient;
     @Autowired
-    public CustomerWrapperService(CustomerAccountService customerAccountService, AccountBalanceService accountBalanceService) {
+    public CustomerWrapperService(CustomerAccountService customerAccountService,
+                                  AccountBalanceService accountBalanceService,
+                                  OnlineBalanceImpl onlineBalance
+                                  , OfflineBalanceImpl offlineBalance
+                                  , MessagePublisherClient messagePublisherClient
+    ) {
         this.customerAccountService = customerAccountService;
         this.accountBalanceService = accountBalanceService;
+        this.onlineBalanceimpl = onlineBalance;
+        this.offlineBalanceimpl = offlineBalance;
+        this.messagePublisherClient = messagePublisherClient;
     }
 
     public CustomerAccountModel createNewAccount(CustomerAccountModel customerAccountModel)
@@ -80,13 +92,14 @@ public class CustomerWrapperService {
     }
 
     @Transactional
-    public ResponseEntity multiBalanceUpdate(List<BalanceUpdateRequest> balanceUpdList)
+    public ResponseEntity multiBalanceUpdate2(List<BalanceUpdateRequest> balanceUpdList)
     {
         // Validate the Transaction
         // Split Send Credit First
         // then Debit
         // Perform Final Check if Success full
         List<BalanceUpdateRequest> debitBalanceUpdate = new ArrayList<>();
+        List<MessagePublisherRequest> messagePublisherRequestList = new ArrayList<>();
 
         for(int idx =0 ; idx<balanceUpdList.size(); idx++ )
         {
@@ -106,6 +119,7 @@ public class CustomerWrapperService {
                     debitBalanceUpdate.add(balanceUpdList.get(idx));
                 }
             }
+
         }
 
         if(debitBalanceUpdate.size()>0)
@@ -118,6 +132,50 @@ public class CustomerWrapperService {
                                 ,balanceUpdList);
     }
 
+
+    @Transactional
+    public ResponseEntity multiBalanceUpdate(List<BalanceUpdateRequest> balanceUpdList)
+    {
+       List<MessagePublisherRequest> messagePublisherRequestList = new ArrayList<>();
+       for(int idx = 0 ; idx < balanceUpdList.size(); idx++)
+       {
+           Balance balance;
+
+            if(verifyTxnType(balanceUpdList.get(idx)).equals(DebitCreditEnum.valueOf("DEBIT")))
+            {
+                balance = onlineBalanceimpl;
+            }else
+            {
+                balance = offlineBalanceimpl;
+            }
+          balance.updateBalance(balanceUpdList.get(idx));
+          MessagePublisherRequest messagePublisherRequest =  balance.messageGenerator(balanceUpdList.get(idx));
+          messagePublisherRequestList.add(messagePublisherRequest);
+       }
+        messagePublisherClient.sendBalanceUpdate("BalanceUpdate",messagePublisherRequestList);
+
+        return customerAccountResponse.generateResponse("Successfully Processed Transactions"
+                ,HttpStatus.OK
+                ,balanceUpdList);
+    }
+
+
+    public DebitCreditEnum verifyTxnType(BalanceUpdateRequest balanceUpdateRequest)
+    {
+        if
+        ( (balanceUpdateRequest.getDrcr().equals(DebitCreditEnum.valueOf("DEBIT"))
+           && balanceUpdateRequest.getAmount() >0)
+           ||(balanceUpdateRequest.getDrcr().equals(DebitCreditEnum.valueOf("CREDIT"))
+              && balanceUpdateRequest.getAmount() < 0)
+        )
+        {
+          return DebitCreditEnum.DEBIT;
+        }else
+        {
+          return  DebitCreditEnum.CREDIT;
+        }
+
+    }
 
 
 }

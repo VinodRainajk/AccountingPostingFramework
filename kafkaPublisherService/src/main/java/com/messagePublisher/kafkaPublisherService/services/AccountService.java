@@ -10,13 +10,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AccountService {
     @Autowired
     @Qualifier("accountkafkaTemplate")
     private KafkaTemplate<String, AccountBalanceDetails> kafkaTemplate;
-    public ResponseEntity sendBalanceDetails(String topicName, AccountBalanceDetails accountBalanceDetails) {
-                kafkaTemplate.send(topicName,accountBalanceDetails.getCustomerAccNo().toString(),accountBalanceDetails);
+    public ResponseEntity sendBalanceDetails(String topicName, List<AccountBalanceDetails> accountBalanceDetailslist) {
+
+        accountBalanceDetailslist.stream()
+                        .forEach((a)-> kafkaTemplate.send(topicName,a.getCustomerAccNo().toString(),a));
+
 
         return ResponseEntity.status(HttpStatus.OK).body("Message Sent Successfully");
     }

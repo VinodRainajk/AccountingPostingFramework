@@ -36,7 +36,7 @@ public class AccountBalanceService {
 
     public List<BalanceUpdateRequest> updateOnlineBalance(List<BalanceUpdateRequest> balanceUpdateRequestlist)
     {
-        lOGGER.info("Inside  updateOnlineBalance");
+       lOGGER.info("Inside  updateOnlineBalance");
        return balanceRepository.updateOnlineBalance(balanceUpdateRequestlist);
     }
 
