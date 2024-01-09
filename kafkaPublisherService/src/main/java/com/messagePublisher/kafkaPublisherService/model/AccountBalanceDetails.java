@@ -8,7 +8,7 @@ public class AccountBalanceDetails {
     String customerName;
     String accountStatus;
     double balance;
-    List<BalanceUpdateRequest> balanceUpdateRequestList;
+    BalanceUpdateRequest balanceUpdateRequest;
 
     public Integer getCustomerAccNo() {
         return customerAccNo;
@@ -42,11 +42,11 @@ public class AccountBalanceDetails {
         this.balance = balance;
     }
 
-    public List<BalanceUpdateRequest> getBalanceUpdateRequestList() {
-        return balanceUpdateRequestList;
+    public BalanceUpdateRequest getBalanceUpdateRequest() {
+        return balanceUpdateRequest;
     }
 
-    public void setBalanceUpdateRequestList(List<BalanceUpdateRequest> balanceUpdateRequestList) {
-        this.balanceUpdateRequestList = balanceUpdateRequestList;
+    public void setBalanceUpdateRequest(BalanceUpdateRequest balanceUpdateRequest) {
+        this.balanceUpdateRequest = balanceUpdateRequest;
     }
 }

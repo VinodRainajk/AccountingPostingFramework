@@ -1,8 +1,7 @@
-package com.casaService.casaService.feingClients;
+package com.accountingProcessor.accountingProcessor.feingclients;
 
-import com.casaService.casaService.model.MessagePublisherRequest;
+import com.accountingProcessor.accountingProcessor.model.AccountingModel;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,8 +12,8 @@ import java.util.List;
 @FeignClient("MESSAGE-PUBLISHER")
 public interface MessagePublisherClient {
 
-    @PostMapping("/balanceUpdate/{topicName}")
-    public ResponseEntity sendBalanceUpdate(@PathVariable String topicName, @RequestBody List<MessagePublisherRequest> messagePublisherRequest);
+    @PostMapping("/accounting/{topicName}")
+    public ResponseEntity sendAccountingDetails(@PathVariable String topicName, @RequestBody AccountingModel messagePublisherModel);
 
 
 }

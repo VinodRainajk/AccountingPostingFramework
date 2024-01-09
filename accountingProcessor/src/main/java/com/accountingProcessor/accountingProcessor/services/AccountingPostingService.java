@@ -1,12 +1,9 @@
 package com.accountingProcessor.accountingProcessor.services;
 
-import com.accountingProcessor.accountingProcessor.AccountingProcessorApplication;
-import com.accountingProcessor.accountingProcessor.feingclients.CasaServiceClient;
-import com.accountingProcessor.accountingProcessor.feingclients.ExchangeRateClient;
+
 import com.accountingProcessor.accountingProcessor.entity.AccountingEntries;
 import com.accountingProcessor.accountingProcessor.model.AccountBalanceRequest;
 import com.accountingProcessor.accountingProcessor.model.AccountingModel;
-import com.accountingProcessor.accountingProcessor.model.CurrencyExchangeRateModel;
 import com.accountingProcessor.accountingProcessor.model.TransactionResponseModel;
 import com.accountingProcessor.accountingProcessor.repository.AccountingPostingRepository;
 import jakarta.transaction.Transactional;
@@ -15,14 +12,11 @@ import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,17 +24,19 @@ public class AccountingPostingService {
     private AccountingPostingRepository accountingRepository;
     private ExchangeRate exchangeRate;
     private AccountBalances accountBalances;
-
+    private MessagePublisher messagePublisher;
     private static final Logger LOGGER = LogManager.getLogger(AccountingPostingService.class);
 
 
     @Autowired
     public AccountingPostingService(AccountingPostingRepository accountingRepository,
                                     ExchangeRate exchangeRate,
-                                    AccountBalances accountBalances) {
+                                    AccountBalances accountBalances,
+                                    MessagePublisher messagePublisher) {
         this.accountingRepository = accountingRepository;
         this.exchangeRate = exchangeRate;
         this.accountBalances  = accountBalances;
+        this.messagePublisher =  messagePublisher;
     }
 
     public List<AccountingModel> getTransactions(String txnRefNo) {
@@ -99,6 +95,12 @@ public class AccountingPostingService {
                                                         .collect(Collectors.toList());
 
             }
+
+            LOGGER.info("Sending the Transactions for Kafka ");
+
+                    savedAccounting
+                    .stream()
+                    .forEach(messagePublisher::SendMessage);
 
             LOGGER.info("Successfully processed all Transactions");
             return TransactionResponseModel.generateResponse("Successfully To Processed Request", HttpStatus.OK,savedAccounting);

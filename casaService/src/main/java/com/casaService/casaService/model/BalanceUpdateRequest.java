@@ -39,6 +39,13 @@ public class BalanceUpdateRequest {
         this.drcr = drcr;
     }
 
-
-
+    @Override
+    public String toString() {
+        return "BalanceUpdateRequest{" +
+                "txnRefno='" + txnRefno + '\'' +
+                ", customerAccNo=" + customerAccNo +
+                ", drcr=" + drcr +
+                ", amount=" + amount +
+                '}';
+    }
 }

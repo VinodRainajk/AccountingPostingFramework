@@ -6,6 +6,5 @@ import com.casaService.casaService.model.MessagePublisherRequest;
 public interface Balance {
 
     public void updateBalance(BalanceUpdateRequest balanceUpdateRequest);
-    public MessagePublisherRequest messageGenerator(BalanceUpdateRequest balanceUpdateRequest);
 
 }

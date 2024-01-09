@@ -53,15 +53,5 @@ public class OnlineBalanceImpl implements Balance{
 
     }
 
-    @Override
-    public MessagePublisherRequest messageGenerator(BalanceUpdateRequest balanceUpdateRequest) {
-        lOGGER.info("inside MessagePublisherRequest ");
-        MessagePublisherRequest messagePublisherRequest = new MessagePublisherRequest();
-        messagePublisherRequest.setBalanceUpdateRequest(balanceUpdateRequest);
-        messagePublisherRequest.setCustomerAccNo(balanceUpdateRequest.getCustomerAccNo());
-        messagePublisherRequest.setBalance(balanceRepository.getAccountBalance(balanceUpdateRequest.getCustomerAccNo()).getAccountBalance());
-        messagePublisherRequest.setCustomerName(customerAccountRepository.getReferenceById(balanceUpdateRequest.getCustomerAccNo()).getCustomerName());
-        messagePublisherRequest.setAccountStatus(customerAccountRepository.getReferenceById(balanceUpdateRequest.getCustomerAccNo()).getAccountStatus());
-        return messagePublisherRequest;
-    }
+
 }

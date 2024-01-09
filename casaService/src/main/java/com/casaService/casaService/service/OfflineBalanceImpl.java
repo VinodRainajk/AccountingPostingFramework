@@ -13,20 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OfflineBalanceImpl implements  Balance{
+public class OfflineBalanceImpl implements  Balance {
     private static final Logger lOGGER = LogManager.getLogger(OfflineBalanceImpl.class);
     private ModelMapper maper = new ModelMapper();
-    private CustBalOfflineRepo custBalOfflineRepo ;
-    private CustomerAccountRepository customerAccountRepository;
+    private CustBalOfflineRepo custBalOfflineRepo;
+
     private BalanceRepository balanceRepository;
 
     @Autowired
     public OfflineBalanceImpl(CustBalOfflineRepo custBalOfflineRepo,
-                              CustomerAccountRepository customerAccountRepository,
-                              BalanceRepository balanceRepository)
-    {
+                              BalanceRepository balanceRepository) {
         this.custBalOfflineRepo = custBalOfflineRepo;
-        this.customerAccountRepository = customerAccountRepository;
         this.balanceRepository = balanceRepository;
     }
 
@@ -35,21 +32,10 @@ public class OfflineBalanceImpl implements  Balance{
         lOGGER.info("Inside  OfflineBalanceImpl updateBalance");
         CustomerAccountOfflineBalance customerAccountOfflineBalance = maper.map(balanceUpdateRequest, CustomerAccountOfflineBalance.class);
         customerAccountOfflineBalance.setStatus("U");
-        CustomerAccountOfflineBalance returnedval=  custBalOfflineRepo.save(customerAccountOfflineBalance);
+        CustomerAccountOfflineBalance returnedval = custBalOfflineRepo.save(customerAccountOfflineBalance);
 
 
-    }
-
-    @Override
-    public MessagePublisherRequest messageGenerator(BalanceUpdateRequest balanceUpdateRequest)
-    {
-        MessagePublisherRequest messagePublisherRequest = new MessagePublisherRequest();
-        messagePublisherRequest.setBalanceUpdateRequest(balanceUpdateRequest);
-        messagePublisherRequest.setCustomerAccNo(balanceUpdateRequest.getCustomerAccNo());
-
-        messagePublisherRequest.setBalance(balanceRepository.getAccountBalance(balanceUpdateRequest.getCustomerAccNo()).getAccountBalance());
-        messagePublisherRequest.setCustomerName(customerAccountRepository.getReferenceById(balanceUpdateRequest.getCustomerAccNo()).getCustomerName());
-        messagePublisherRequest.setAccountStatus(customerAccountRepository.getReferenceById(balanceUpdateRequest.getCustomerAccNo()).getAccountStatus());
-        return messagePublisherRequest;
     }
 }
+
+

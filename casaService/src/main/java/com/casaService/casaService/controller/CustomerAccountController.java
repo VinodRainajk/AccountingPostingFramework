@@ -3,32 +3,26 @@ package com.casaService.casaService.controller;
 import com.casaService.casaService.model.BalanceResponse;
 import com.casaService.casaService.model.BalanceUpdateRequest;
 import com.casaService.casaService.model.CustomerAccountModel;
-import com.casaService.casaService.service.AccountBalanceService;
 import com.casaService.casaService.service.CustomerWrapperService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 @RestController
 public class CustomerAccountController {
 
-    AccountBalanceService accountBalanceService;
     CustomerWrapperService customerWrapperService;
     private static final Logger lOGGER = LogManager.getLogger(CustomerAccountController.class);
 
 
     @Autowired
-    public CustomerAccountController(AccountBalanceService accountBalanceService, CustomerWrapperService customerWrapperService) {
-        this.accountBalanceService = accountBalanceService;
+    public CustomerAccountController( CustomerWrapperService customerWrapperService) {
+
         this.customerWrapperService = customerWrapperService;
     }
 /*

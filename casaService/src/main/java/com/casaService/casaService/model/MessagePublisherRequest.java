@@ -49,6 +49,17 @@ public class MessagePublisherRequest {
     public void setBalanceUpdateRequest(BalanceUpdateRequest balanceUpdateRequest) {
         this.balanceUpdateRequest = balanceUpdateRequest;
     }
+
+    @Override
+    public String toString() {
+        return "MessagePublisherRequest{" +
+                "customerAccNo=" + customerAccNo +
+                ", customerName='" + customerName + '\'' +
+                ", accountStatus='" + accountStatus + '\'' +
+                ", balance=" + balance +
+                ", balanceUpdateRequest=" + balanceUpdateRequest +
+                '}';
+    }
 }
 
 
