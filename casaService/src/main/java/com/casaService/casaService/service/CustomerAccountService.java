@@ -18,14 +18,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class CustomerAccountService {
     private static final Logger lOGGER = LogManager.getLogger(CustomerAccountService.class);
     private CustomerAccountRepository customerAccountRepository;
     private BalanceRepository balanceRepository;
-    private ModelMapper maper = new ModelMapper();
+
 
     private final AccountCustomException accountCustomException = new AccountCustomException();
 
@@ -40,12 +38,15 @@ public class CustomerAccountService {
     @Transactional
     public CustomerAccountModel createNewAccount(CustomerAccountModel customerAccountModel)
     {
+        ModelMapper maper = new ModelMapper();
         lOGGER.info( "info Service "+ customerAccountModel.getCustomerName());
         customerAccountModel.setAccountStatus("OPEN");
         CustomerAccount customerAccount =  maper.map(customerAccountModel, CustomerAccount.class);
+        lOGGER.info( "after mapping  "+ customerAccount.getCustomerName());
         CustomerAccount accountentity = customerAccountRepository.save(customerAccount);
+        lOGGER.info( "info saved "+ accountentity.getCustomerName());
         CustomerAccountModel accountmodel = maper.map(accountentity,CustomerAccountModel.class);
-
+        lOGGER.info( "info mapped "+ accountmodel.getCustomerName());
         if(accountmodel.getCustomerAccNo()!=null)
         {
             CustomerAccountBalance accountBalance = new CustomerAccountBalance();
@@ -60,7 +61,7 @@ public class CustomerAccountService {
 
     public CustomerAccountModel getAccountDetails(Integer accountNo)
     {
-
+         ModelMapper maper = new ModelMapper();
         CustomerAccount accountentity = customerAccountRepository.getReferenceById(accountNo);
         if(accountentity == null || accountentity.getCustomerAccNo() ==null)
         {
