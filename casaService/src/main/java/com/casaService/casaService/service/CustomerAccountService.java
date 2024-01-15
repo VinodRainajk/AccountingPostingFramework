@@ -42,11 +42,8 @@ public class CustomerAccountService {
         lOGGER.info( "info Service "+ customerAccountModel.getCustomerName());
         customerAccountModel.setAccountStatus("OPEN");
         CustomerAccount customerAccount =  maper.map(customerAccountModel, CustomerAccount.class);
-        lOGGER.info( "after mapping  "+ customerAccount.getCustomerName());
         CustomerAccount accountentity = customerAccountRepository.save(customerAccount);
-        lOGGER.info( "info saved "+ accountentity.getCustomerName());
         CustomerAccountModel accountmodel = maper.map(accountentity,CustomerAccountModel.class);
-        lOGGER.info( "info mapped "+ accountmodel.getCustomerName());
         if(accountmodel.getCustomerAccNo()!=null)
         {
             CustomerAccountBalance accountBalance = new CustomerAccountBalance();
@@ -61,7 +58,7 @@ public class CustomerAccountService {
 
     public CustomerAccountModel getAccountDetails(Integer accountNo)
     {
-         ModelMapper maper = new ModelMapper();
+        ModelMapper maper = new ModelMapper();
         CustomerAccount accountentity = customerAccountRepository.getReferenceById(accountNo);
         if(accountentity == null || accountentity.getCustomerAccNo() ==null)
         {

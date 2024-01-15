@@ -2,6 +2,7 @@ package com.casaService.casaService.service;
 
 import com.casaService.casaService.dto.CustomerAccount;
 import com.casaService.casaService.dto.CustomerAccountBalance;
+import com.casaService.casaService.model.BalanceResponse;
 import com.casaService.casaService.model.CustomerAccountModel;
 import com.casaService.casaService.repository.BalanceRepository;
 import com.casaService.casaService.repository.CustomerAccountRepository;
@@ -13,6 +14,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,24 +34,34 @@ class CustomerAccountServiceTest {
     @InjectMocks
     private CustomerAccountService customerAccountService;
 
+    CustomerAccount accountentity = new CustomerAccount();
+    CustomerAccountModel customerAccountModel = new CustomerAccountModel();
+    BalanceResponse balanceResponse = new BalanceResponse();
+
+
+
+
     @BeforeEach
     void setUp() {
 
         MockitoAnnotations.openMocks(this);
+        accountentity.setAccountStatus("OPEN");
+        accountentity.setCustomerName("Vinod");
+        accountentity.setCustomerAccNo(1);
+
+
+        customerAccountModel.setCustomerName("Vinod");
+        customerAccountModel.setCustomerAccNo(1);
+
+        balanceResponse.setAccountBalance(0D);
+        balanceResponse.setCustomerAccNo(1);
+
     }
 
     @Test
     public void ValidatecreateNewAccount()
     {
-        CustomerAccountModel customerAccountModel = new CustomerAccountModel();
-        customerAccountModel.setCustomerName("Vinod");
-        customerAccountModel.setCustomerAccNo(1);
 
-
-        CustomerAccount accountentity = new CustomerAccount();
-        accountentity.setAccountStatus("OPEN");
-        accountentity.setCustomerName("Vinod");
-        accountentity.setCustomerAccNo(1);
 
 
         CustomerAccount customerAccount = new CustomerAccount();
@@ -71,6 +85,29 @@ class CustomerAccountServiceTest {
 
     }
 
+    @Test
+    public void ValidategetAccountDetails()
+    {
+        Integer inputAccountNumber = 1;
+        Mockito.when(customerAccountRepository.getReferenceById(inputAccountNumber)).thenReturn(accountentity);
+        Mockito.when(maper.map(accountentity,CustomerAccountModel.class)).thenReturn(customerAccountModel);
+        CustomerAccountModel response = customerAccountService.getAccountDetails(inputAccountNumber);
+
+        Assertions.assertEquals(customerAccountModel.getCustomerAccNo(),1);
+    }
+
+
+    @Test
+    public void TesttheAccountClosure()
+    {
+        Integer accountNo =1;
+        Mockito.when(balanceRepository.getAccountBalance(accountNo)).thenReturn(balanceResponse);
+        Mockito.when(customerAccountRepository.getReferenceById(accountNo)).thenReturn(accountentity);
+        ResponseEntity response =  customerAccountService.closeCustomerAccount(accountNo);
+        Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
+
+
+    }
 
 
 }
