@@ -4,7 +4,6 @@ import com.casaService.casaService.exception.AccountCustomException;
 import com.casaService.casaService.exception.CustomAccountExceptionResponse;
 import com.casaService.casaService.feingClients.MessagePublisherClient;
 import com.casaService.casaService.model.*;
-import com.casaService.casaService.repository.CustomerAccountRepository;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
